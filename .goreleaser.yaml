@@ -102,3 +102,4 @@ brews:
       #
       # Templates: allowed
       name: homebrew-xpo
+      token: "{{ .Env.GH_PAT }}"

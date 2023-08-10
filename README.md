@@ -66,3 +66,6 @@ $ cat logfile | xpo -r "ERR|WARN|INFO" -l | less -R
 
 # Credits
 * Steve Losh for the idea and [wonderful implementation in Common Lisp](https://stevelosh.com/blog/2021/03/small-common-lisp-cli-programs/)
+
+# License
+`xpo` is released under the MIT license. See [LICENSE.txt](LICENSE.txt)

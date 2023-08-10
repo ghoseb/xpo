@@ -2,14 +2,11 @@ package internal
 
 import (
 	"bufio"
-
+	"bytes"
 	"fmt"
 	"io"
-
 	"os"
 	"regexp"
-
-	"bytes"
 	"strconv"
 )
 
@@ -51,14 +48,15 @@ func writeStr(out *os.File, s string) {
 	}
 }
 
-// wrap regexp matches with ansi shell escape codes
+// Wrap regexp matches with ansi shell escape codes
 func wrapColor(re *regexp.Regexp, line []byte, colors []int, explicit map[string]int) []byte {
+	// thank god for the closures!
 	replacer := func(token []byte) []byte {
 		var buf bytes.Buffer
 		var color int
 		if c, ok := explicit[string(token)]; ok {
+			// if an explicit color is provided, use that
 			color = c
-
 		} else {
 			cid := djb2Hash(token) % uint64(len(colors))
 			color = colors[cid]
@@ -88,6 +86,27 @@ func makeColors(pred func(int, int, int) bool) []int {
 	return cs
 }
 
+// Parse explicit colors
+func ParseExplicit(opt []string) (data map[string]int) {
+	data = make(map[string]int)
+	for _, o := range opt {
+		g := re_explicit.FindSubmatch([]byte(o))
+		if g != nil {
+			mr, _ := strconv.Atoi(string(g[idx_r]))
+			mg, _ := strconv.Atoi(string(g[idx_g]))
+			mb, _ := strconv.Atoi(string(g[idx_b]))
+			data[string(g[idx_re])] = rgbCode(mr, mg, mb)
+		}
+	}
+	// return nil if we have no matches
+	if len(data) > 0 {
+		return data
+	} else {
+		return nil
+	}
+}
+
+// The core engine that does all the work
 func Highlight(re *regexp.Regexp, rdr *bufio.Reader, out *os.File, explicit map[string]int, isLight bool) {
 	var colors []int
 	if isLight {
@@ -110,25 +129,6 @@ func Highlight(re *regexp.Regexp, rdr *bufio.Reader, out *os.File, explicit map[
 			fmt.Fprintln(os.Stderr, "error:", err)
 			os.Exit(1)
 		}
-	}
-}
-
-func ParseExplicit(opt []string) (data map[string]int) {
-	data = make(map[string]int)
-	for _, o := range opt {
-		g := re_explicit.FindSubmatch([]byte(o))
-		if g != nil {
-			mr, _ := strconv.Atoi(string(g[idx_r]))
-			mg, _ := strconv.Atoi(string(g[idx_g]))
-			mb, _ := strconv.Atoi(string(g[idx_b]))
-			data[string(g[idx_re])] = rgbCode(mr, mg, mb)
-		}
-	}
-	// return nil if we have no matches
-	if len(data) > 0 {
-		return data
-	} else {
-		return nil
 	}
 }
 

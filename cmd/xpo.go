@@ -3,12 +3,12 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"regexp"
 
-	"fmt"
-
 	i "github.com/ghoseb/xpo/internal"
+
 	flag "github.com/spf13/pflag"
 )
 
@@ -19,15 +19,16 @@ func main() {
 	var ex map[string]int
 
 	fs := flag.NewFlagSet("xpo", flag.ContinueOnError)
-	fs.StringVarP(&regex, "regex", "r", "", "regular expression to highlight")
-	fs.StringArrayVarP(&explicit, "explicit", "e", []string{}, "explicit color for matches")
-	fs.BoolVarP(&isLight, "light-color", "l", false, "use light colors")
+	fs.StringVarP(&regex, "regex", "r", "", "[required] regular expression to highlight")
+	fs.StringArrayVarP(&explicit, "explicit", "e", []string{}, "[optional] explicit color for matches")
+	fs.BoolVarP(&isLight, "light-color", "l", false, "[optional] use colors suitable for a light background")
 
-	// fs.Usage = func() {
-	// 	fmt.Fprintf(os.Stderr, "Usage of xpo:\n")
-
-	// 	fmt.Fprintf(os.Stderr, "%s", fs.FlagUsagesWrapped(80))
-	// }
+	// custom help printer
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of xpo\n------------\n")
+		fmt.Fprintf(os.Stderr, "%s\n", fs.FlagUsagesWrapped(115))
+		fmt.Fprintf(os.Stderr, "Check out github.com/ghoseb/xpo/ for examples.")
+	}
 
 	switch err := fs.Parse(os.Args[1:]); err {
 	case nil:
@@ -40,7 +41,7 @@ func main() {
 	}
 
 	if regex == "" {
-		fmt.Fprintf(os.Stderr, "Need a regexp to search\n")
+		fmt.Fprintf(os.Stderr, "Please supply a regexp using the -r flag. Use -h for help.")
 		os.Exit(1)
 	}
 
@@ -54,5 +55,4 @@ func main() {
 	out := os.Stdout
 
 	i.Highlight(re, rdr, out, ex, isLight)
-
 }

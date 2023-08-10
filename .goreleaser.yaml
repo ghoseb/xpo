@@ -79,9 +79,10 @@ brews:
     # SPDX identifier of your app's license.
     license: "MIT"
 
+    skip_upload: true
+
     # Packages your package depends on.
     dependencies:
-      - name: git
       - name: zsh
         type: optional
 
@@ -102,4 +103,3 @@ brews:
       #
       # Templates: allowed
       name: homebrew-xpo
-      token: "{{ .Env.GH_PAT }}"

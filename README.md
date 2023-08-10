@@ -20,7 +20,15 @@ Colors are assigned kind-of arbitrarily, but it's also possible to assign explic
 
 Color space: `6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)`
 
-# Building
+# Installation on MacOS
+
+```bash
+$ brew tap ghoseb/xpo
+$ brew install xpo
+$ xpo --help # verify installation
+```
+
+# Building from source
 
 ```bash
 # you'll need the Go toolchain to compile the project
@@ -32,10 +40,6 @@ $ make build
 # move the binary from bin to a suitable location
 $ mv bin/xpo ~/bin/
 ```
-
-# Homebrew package
-
-TODO
 
 # Usage
 
